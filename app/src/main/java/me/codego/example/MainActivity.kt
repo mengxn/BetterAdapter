@@ -8,6 +8,7 @@ import android.view.View
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item_main_1.view.*
 import kotlinx.android.synthetic.main.item_main_2.view.*
+import me.codego.adapter.BaseAdapter
 import me.codego.adapter.BaseViewHolder
 import me.codego.adapter.ITypeFactory
 import me.codego.adapter.MultiTypeBaseAdapter
@@ -26,16 +27,17 @@ class MainActivity : AppCompatActivity() {
 
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
-        recyclerView.adapter = initMultiAdapter()
+        recyclerView.adapter = initAdapter()
+//        recyclerView.adapter = initMultiAdapter()
     }
 
     private fun initMultiAdapter(): MultiTypeBaseAdapter<String> {
-        val dataList = (0..30).map { if (it%2 == 0) TEXT_KOTLIN else TEXT_AD }.toMutableList()
-        val typeFactory = object: ITypeFactory<String> {
+        val dataList = (0..30).map { if (it % 2 == 0) TEXT_KOTLIN else TEXT_AD }.toMutableList()
+        val typeFactory = object : ITypeFactory<String> {
 
             override fun type(data: String): ITypeFactory.TypeData {
                 // 简单进行区分类型
-                if(data.length > 10){
+                if (data.length > 10) {
                     return ITypeFactory.TypeData(1, R.layout.item_main_1)
                 }
                 return ITypeFactory.TypeData(2, R.layout.item_main_2)
@@ -43,13 +45,22 @@ class MainActivity : AppCompatActivity() {
 
             override fun createViewHolder(view: View, type: Int): BaseViewHolder<String> {
                 return when (type) {
-                    1 -> BaseViewHolder<String>(view){view, s -> view.contentTv.text = s }
-                    2 -> BaseViewHolder<String>(view){view, s -> view.adTv.text = s }
+                    1 -> BaseViewHolder<String>(view) { view1, s -> view1.contentTv.text = s }
+                    2 -> BaseViewHolder<String>(view) { view2, s -> view2.adTv.text = s }
                     else -> throw Exception("type is not define")
                 }
             }
 
         }
         return MultiTypeBaseAdapter(dataList, typeFactory)
+    }
+
+    private fun initAdapter(): BaseAdapter<String> {
+        val adapter: BaseAdapter<String> = BaseAdapter(R.layout.item_main_1) { view, s ->
+            view.contentTv.text = s
+        }
+        val dataList = (0..20).map { "%d >> %s".format(it, TEXT_KOTLIN) }
+        adapter.append(dataList)
+        return adapter
     }
 }
