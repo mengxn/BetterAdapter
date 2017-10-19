@@ -8,10 +8,10 @@ import android.view.View
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item_main_1.view.*
 import kotlinx.android.synthetic.main.item_main_2.view.*
-import me.codego.adapter.BaseAdapter
-import me.codego.adapter.BaseViewHolder
+import me.codego.adapter.SingleAdapter
+import me.codego.adapter.ViewHolder
 import me.codego.adapter.ITypeFactory
-import me.codego.adapter.MultiTypeBaseAdapter
+import me.codego.adapter.MultiAdapter
 
 class MainActivity : AppCompatActivity() {
 
@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
 //        recyclerView.adapter = initMultiAdapter()
     }
 
-    private fun initMultiAdapter(): MultiTypeBaseAdapter<String> {
+    private fun initMultiAdapter(): MultiAdapter<String> {
         val dataList = (0..30).map { if (it % 2 == 0) TEXT_KOTLIN else TEXT_AD }.toMutableList()
         val typeFactory = object : ITypeFactory<String> {
 
@@ -43,20 +43,20 @@ class MainActivity : AppCompatActivity() {
                 return ITypeFactory.TypeData(2, R.layout.item_main_2)
             }
 
-            override fun createViewHolder(view: View, type: Int): BaseViewHolder<String> {
+            override fun createViewHolder(view: View, type: Int): ViewHolder<String> {
                 return when (type) {
-                    1 -> BaseViewHolder<String>(view) { view1, s -> view1.contentTv.text = s }
-                    2 -> BaseViewHolder<String>(view) { view2, s -> view2.adTv.text = s }
+                    1 -> ViewHolder<String>(view) { view1, s -> view1.contentTv.text = s }
+                    2 -> ViewHolder<String>(view) { view2, s -> view2.adTv.text = s }
                     else -> throw Exception("type is not define")
                 }
             }
 
         }
-        return MultiTypeBaseAdapter(dataList, typeFactory)
+        return MultiAdapter(dataList, typeFactory)
     }
 
-    private fun initAdapter(): BaseAdapter<String> {
-        val adapter: BaseAdapter<String> = BaseAdapter(R.layout.item_main_1) { view, s ->
+    private fun initAdapter(): SingleAdapter<String> {
+        val adapter: SingleAdapter<String> = SingleAdapter(R.layout.item_main_1) { view, s ->
             view.contentTv.text = s
         }
         val dataList = (0..20).map { "%d >> %s".format(it, TEXT_KOTLIN) }

@@ -9,13 +9,13 @@ import android.view.ViewGroup
  * 多类型，基础 RecyclerView Adapter
  * Created by mengxn on 2017/9/21.
  */
-open class MultiTypeBaseAdapter<T>(private val dataList: MutableList<T>, private val typeFactory: ITypeFactory<T>) : RecyclerView.Adapter<BaseViewHolder<T>>() {
+open class MultiAdapter<T>(private val dataList: MutableList<T>, private val typeFactory: ITypeFactory<T>) : RecyclerView.Adapter<ViewHolder<T>>() {
 
     constructor(typeFactory: ITypeFactory<T>) : this(arrayListOf(), typeFactory)
 
     private val typeDataArray = SparseArray<ITypeFactory.TypeData>()
 
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): BaseViewHolder<T> {
+    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder<T> {
         parent?.let {
             val view = LayoutInflater.from(parent.context).inflate(typeDataArray[viewType].layoutId, parent, false)
             return typeFactory.createViewHolder(view, viewType)
@@ -25,7 +25,7 @@ open class MultiTypeBaseAdapter<T>(private val dataList: MutableList<T>, private
 
     override fun getItemCount(): Int = dataList.size
 
-    override fun onBindViewHolder(holder: BaseViewHolder<T>?, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder<T>?, position: Int) {
         holder?.let { holder.bind(dataList[holder.adapterPosition]) }
     }
 
@@ -64,6 +64,7 @@ open class MultiTypeBaseAdapter<T>(private val dataList: MutableList<T>, private
         notifyItemChanged(index)
     }
 
+    fun getItem(index: Int) = dataList[index]
 }
 
 

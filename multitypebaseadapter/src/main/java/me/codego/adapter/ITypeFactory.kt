@@ -9,7 +9,7 @@ interface ITypeFactory<in T> {
 
     fun type(data: T): TypeData
 
-    fun createViewHolder(view: View, type: Int): BaseViewHolder<T>
+    fun createViewHolder(view: View, type: Int): ViewHolder<T>
 
     data class TypeData(val type: Int, val layoutId: Int)
 }
