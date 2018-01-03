@@ -3,36 +3,39 @@ package me.codego.adapter
 import android.support.v7.widget.RecyclerView
 import android.util.SparseArray
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 
 /**
  * 多类型，基础 RecyclerView Adapter
  * Created by mengxn on 2017/9/21.
  */
-open class MultiAdapter<T>(private val dataList: MutableList<T>, private val typeFactory: ITypeFactory<T>) : RecyclerView.Adapter<ViewHolder<T>>() {
+open class MultiAdapter<T>(private val typeFactory: ITypeFactory<T>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    constructor(typeFactory: ITypeFactory<T>) : this(arrayListOf(), typeFactory)
-
+    private val dataList = mutableListOf<T>()
     private val typeDataArray = SparseArray<ITypeFactory.TypeData>()
 
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder<T> {
-        parent?.let {
-            val view = LayoutInflater.from(parent.context).inflate(typeDataArray[viewType].layoutId, parent, false)
-            return typeFactory.createViewHolder(view, viewType)
-        }
-        throw Exception("parent is null")
-    }
-
     override fun getItemCount(): Int = dataList.size
-
-    override fun onBindViewHolder(holder: ViewHolder<T>?, position: Int) {
-        holder?.let { holder.bind(dataList[holder.adapterPosition]) }
-    }
 
     override fun getItemViewType(position: Int): Int {
         val typeData = typeFactory.type(dataList[position])
         typeDataArray.put(typeData.type, typeData)
         return typeData.type
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): RecyclerView.ViewHolder {
+        parent?.let {
+            val view = LayoutInflater.from(parent.context).inflate(typeDataArray[viewType].layoutId, parent, false)
+            return object : RecyclerView.ViewHolder(view) {}
+        }
+        throw Exception("parent is null")
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder?, position: Int) {
+        holder?.run {
+            bindAction?.invoke(itemView, dataList[adapterPosition])
+            bindIndexedAction?.invoke(itemView, dataList[adapterPosition], adapterPosition)
+        }
     }
 
     fun setData(dataList: List<T>) {
@@ -73,6 +76,20 @@ open class MultiAdapter<T>(private val dataList: MutableList<T>, private val typ
     }
 
     fun getItem(index: Int) = dataList[index]
+
+    private var bindAction: ((View, T) -> Unit)? = null
+
+    fun forEach(action: (View, T) -> Unit): MultiAdapter<T> {
+        bindAction = action
+        return this
+    }
+
+    private var bindIndexedAction: ((View, T, Int) -> Unit)? = null
+
+    fun forEachIndexed(action: (View, T, Int) -> Unit): MultiAdapter<T> {
+        bindIndexedAction = action
+        return this
+    }
 }
 
 
