@@ -8,6 +8,7 @@ import android.view.ViewGroup
 
 /**
  * 多类型，基础 RecyclerView Adapter
+ * 根据 Model 确定 ViewType
  * Created by mengxn on 2017/9/21.
  */
 open class MultiAdapter<T>(private val typeFactory: ITypeFactory<T>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
