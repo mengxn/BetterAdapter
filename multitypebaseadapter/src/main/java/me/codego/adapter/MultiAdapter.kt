@@ -20,7 +20,7 @@ open class MultiAdapter<T>(private val dataList: MutableList<T>, private val typ
             val view = LayoutInflater.from(parent.context).inflate(typeDataArray[viewType].layoutId, parent, false)
             return typeFactory.createViewHolder(view, viewType)
         }
-        throw Exception("cannot find viewType")
+        throw Exception("parent is null")
     }
 
     override fun getItemCount(): Int = dataList.size
@@ -36,10 +36,13 @@ open class MultiAdapter<T>(private val dataList: MutableList<T>, private val typ
     }
 
     fun setData(dataList: List<T>) {
-        this.dataList.clear()
-        this.dataList.addAll(dataList)
-        notifyDataSetChanged()
+        this.dataList.apply {
+            clear()
+            addAll(dataList)
+        }.also { notifyDataSetChanged() }
     }
+
+    fun getData() = dataList
 
     fun append(data: T) {
         insert(itemCount, data)
@@ -62,6 +65,11 @@ open class MultiAdapter<T>(private val dataList: MutableList<T>, private val typ
     fun replace(index: Int, data: T) {
         dataList[index] = data
         notifyItemChanged(index)
+    }
+
+    fun delete(index: Int) {
+        dataList.removeAt(index)
+        notifyItemRemoved(index)
     }
 
     fun getItem(index: Int) = dataList[index]

@@ -7,7 +7,7 @@ import android.view.View
  * Created by mengxn on 2017/9/20.
  */
 
-class SingleAdapter<T>(private val layoutId: Int, dataList: MutableList<T>, private val bind: (View, T) -> Unit) : MultiAdapter<T>(dataList, object : ITypeFactory<T> {
+open class SingleAdapter<T>(private val layoutId: Int, dataList: MutableList<T>, val bind: (View, T) -> Unit) : MultiAdapter<T>(dataList, object : ITypeFactory<T> {
 
     override fun type(data: T): ITypeFactory.TypeData = ITypeFactory.TypeData(0, layoutId)
 

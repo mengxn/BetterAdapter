@@ -8,10 +8,10 @@ import android.view.View
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item_main_1.view.*
 import kotlinx.android.synthetic.main.item_main_2.view.*
-import me.codego.adapter.SingleAdapter
-import me.codego.adapter.ViewHolder
 import me.codego.adapter.ITypeFactory
 import me.codego.adapter.MultiAdapter
+import me.codego.adapter.SingleAdapter
+import me.codego.adapter.ViewHolder
 
 class MainActivity : AppCompatActivity() {
 
