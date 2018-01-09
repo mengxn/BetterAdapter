@@ -1,15 +1,26 @@
 package me.codego.example
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageInfo
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
+import android.view.Menu
+import android.view.MenuItem
+import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item_main_1.view.*
 import kotlinx.android.synthetic.main.item_main_2.view.*
+import kotlinx.android.synthetic.main.item_main_3.view.*
 import me.codego.adapter.ITypeFactory
 import me.codego.adapter.MultiAdapter
 import me.codego.adapter.SingleAdapter
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.uiThread
 
 class MainActivity : AppCompatActivity() {
 
@@ -19,6 +30,8 @@ class MainActivity : AppCompatActivity() {
             "Kotlin已正式成为Android官方支持开发语言。"
     private val TEXT_AD = "Hi，这里是广告～"
 
+    private lateinit var mAdapter: MultiAdapter<PackageInfo>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -26,7 +39,7 @@ class MainActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
 //        recyclerView.adapter = initAdapter()
-        recyclerView.adapter = initMultiAdapter()
+        recyclerView.adapter = initAppsAdapter()
     }
 
     private fun initMultiAdapter(): MultiAdapter<String> {
@@ -58,5 +71,65 @@ class MainActivity : AppCompatActivity() {
         return SingleAdapter<String>(R.layout.item_main_1).forEach { view, s ->
             view.contentTv.text = s
         }.also { it.setData((0..20).map { "%d >> %s".format(it, TEXT_KOTLIN) }) }
+    }
+
+    private fun initAppsAdapter(): MultiAdapter<PackageInfo> {
+        return SingleAdapter<PackageInfo>(R.layout.item_main_3).forEach { view, info ->
+            view.appNameTv.text = info.applicationInfo.loadLabel(packageManager)
+            view.packageTv.text = info.packageName
+            view.logoImg.setImageDrawable(info.applicationInfo.loadIcon(packageManager))
+            view.setOnClickListener {
+                copyToClipboard(info)
+            }
+        }.also {
+            mAdapter = it
+            doAsync {
+                val packages = packageManager.getInstalledPackages(0).filter {
+                    ApplicationInfo.FLAG_SYSTEM.and(it.applicationInfo.flags) == 0
+                }
+                uiThread {
+                    mAdapter.setData(packages)
+                }
+            }
+        }
+    }
+
+    private fun copyToClipboard(packageInfo: PackageInfo) {
+        val clipboardManager: ClipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        clipboardManager.primaryClip = ClipData.newPlainText("", convertPackageInfo(packageInfo))
+        Toast.makeText(this, "已复制到剪切板", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun copyToClipboard(packageInfo: List<PackageInfo>) {
+        val clipboardManager: ClipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        StringBuilder().apply {
+            packageInfo.forEach {
+                append(convertPackageInfo(it))
+                appendln()
+            }
+        }.also {
+            clipboardManager.primaryClip = ClipData.newPlainText("", it.toString())
+        }
+
+        Toast.makeText(this, "已复制到剪切板", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun convertPackageInfo(packageInfo: PackageInfo): String {
+        val appName = packageInfo.applicationInfo.loadLabel(packageManager)
+        val componentInfo = packageManager.getLaunchIntentForPackage(packageInfo.packageName)?.component?.toString()
+        return "<!-- $appName -->\n<item component=\"$componentInfo\" drawable=\"\"/>"
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id = item.itemId
+        return if (id == R.id.action_copy) {
+            copyToClipboard(mAdapter.getData())
+            true
+        } else super.onOptionsItemSelected(item)
     }
 }
