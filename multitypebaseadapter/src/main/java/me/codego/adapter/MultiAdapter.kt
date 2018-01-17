@@ -17,14 +17,6 @@ open class MultiAdapter<T>(private val typeFactory: ITypeFactory<T>, dataList: M
         return ViewHolder(view, typeDataArray[viewType].bind)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder<T>?, position: Int) {
-        holder?.let {
-            holder.adapterPosition.let {
-                holder.bind(getItem(it), it)
-            }
-        }
-    }
-
     override fun getItemViewType(position: Int): Int {
         val typeData = typeFactory.type(getItem(position))
         typeDataArray.put(typeData.layoutId, typeData)

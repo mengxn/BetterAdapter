@@ -4,12 +4,12 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
+import android.view.LayoutInflater
+import android.view.ViewGroup
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item_main_1.view.*
 import kotlinx.android.synthetic.main.item_main_2.view.*
-import me.codego.adapter.ITypeFactory
-import me.codego.adapter.MultiAdapter
-import me.codego.adapter.SingleAdapter
+import me.codego.adapter.*
 import me.codego.example.bean.Animal
 import me.codego.example.bean.Cat
 import me.codego.example.bean.Dog
@@ -33,7 +33,8 @@ class MainActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
 //        recyclerView.adapter = initAdapter()
-        recyclerView.adapter = initMultiAdapter()
+//        recyclerView.adapter = initMultiAdapter()
+        recyclerView.adapter = initCustomAdapter()
     }
 
     private fun initMultiAdapter(): MultiAdapter<Animal> {
@@ -63,4 +64,20 @@ class MainActivity : AppCompatActivity() {
         adapter.append(dataList)
         return adapter
     }
+
+    private fun initCustomAdapter(): BetterAdapter<String> = object : BetterAdapter<String>() {
+        override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder<String> {
+            val view = LayoutInflater.from(parent!!.context).inflate(R.layout.item_main_1, parent, false)
+            return ViewHolder(view){ view, item, position ->
+                view.contentTv.text = "$position >> $item"
+            }
+        }
+
+        override fun onBindViewHolder(holder: ViewHolder<String>?, position: Int) {
+            super.onBindViewHolder(holder, position)
+            holder?.run {
+                itemView.contentTv.text = "$position >> custom adapter"
+            }
+        }
+    }.also { it.setData((0..20).map { "%d >> %s".format(it, TEXT_KOTLIN) }) }
 }
