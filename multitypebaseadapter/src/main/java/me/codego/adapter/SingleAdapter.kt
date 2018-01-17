@@ -7,12 +7,10 @@ import android.view.View
  * Created by mengxn on 2017/9/20.
  */
 
-open class SingleAdapter<T>(private val layoutId: Int, dataList: MutableList<T>, val bind: (View, T) -> Unit) : MultiAdapter<T>(dataList, object : ITypeFactory<T> {
+open class SingleAdapter<T>(private val layoutId: Int, dataList: MutableList<T>, val bind: (View, T, Int) -> Unit) : MultiAdapter<T>(object : ITypeFactory<T> {
 
-    override fun type(data: T): ITypeFactory.TypeData = ITypeFactory.TypeData(0, layoutId)
+    override fun type(data: T): ITypeFactory.TypeData<T> = ITypeFactory.TypeData(layoutId, bind)
 
-    override fun createViewHolder(view: View, type: Int): ViewHolder<T> = ViewHolder(view, bind)
-
-}){
-    constructor(layoutId: Int, bind: (View, T) -> Unit): this(layoutId, arrayListOf(), bind)
+}, dataList) {
+    constructor(layoutId: Int, bind: (View, T, Int) -> Unit) : this(layoutId, arrayListOf(), bind)
 }
