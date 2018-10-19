@@ -32,9 +32,9 @@ class MainActivity : AppCompatActivity() {
 
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
-//        recyclerView.adapter = initAdapter()
+        recyclerView.adapter = initAdapter()
 //        recyclerView.adapter = initMultiAdapter()
-        recyclerView.adapter = initCustomAdapter()
+//        recyclerView.adapter = initCustomAdapter()
     }
 
     private fun initMultiAdapter(): MultiAdapter<Animal> {
@@ -44,12 +44,12 @@ class MainActivity : AppCompatActivity() {
             override fun type(data: Animal): ITypeFactory.TypeData<Animal> {
                 // 简单进行区分类型
                 if (data is Dog) {
-                    return ITypeFactory.TypeData(R.layout.item_main_1) { view, item, position ->
-                        view.contentTv.text = "$position >> ${item.getName()}"
+                    return ITypeFactory.TypeData(R.layout.item_main_1) { holder ->
+                        holder.itemView.contentTv.text = "${holder.adapterPosition} >> ${holder.data?.getName()}"
                     }
                 }
-                return ITypeFactory.TypeData(R.layout.item_main_2) { view, item, position ->
-                    view.adTv.text = "$position >> ${item.getName()}"
+                return ITypeFactory.TypeData(R.layout.item_main_2) { holder ->
+                    holder.itemView.adTv.text = "${holder.adapterPosition} >> ${holder.data?.getName()}"
                 }
             }
         }
@@ -57,8 +57,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initAdapter(): SingleAdapter<String> {
-        val adapter: SingleAdapter<String> = SingleAdapter(R.layout.item_main_1) { view, item, position ->
-            view.contentTv.text = item
+        val adapter: SingleAdapter<String> = SingleAdapter(R.layout.item_main_1) { holder ->
+            holder.itemView.contentTv.text = holder.data
         }
         val dataList = (0..20).map { "%d >> %s".format(it, TEXT_KOTLIN) }
         adapter.append(dataList)
@@ -68,16 +68,14 @@ class MainActivity : AppCompatActivity() {
     private fun initCustomAdapter(): BetterAdapter<String> = object : BetterAdapter<String>() {
         override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder<String> {
             val view = LayoutInflater.from(parent!!.context).inflate(R.layout.item_main_1, parent, false)
-            return ViewHolder(view){ view, item, position ->
-                view.contentTv.text = "$position >> $item"
-            }
+            return ViewHolder(view)
         }
 
         override fun onBindViewHolder(holder: ViewHolder<String>, position: Int) {
-            super.onBindViewHolder(holder, position)
-            holder?.run {
+            holder.run {
                 itemView.contentTv.text = "$position >> custom adapter"
             }
+
         }
     }.also { it.setData((0..20).map { "%d >> %s".format(it, TEXT_KOTLIN) }) }
 }

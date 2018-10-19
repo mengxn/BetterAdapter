@@ -12,15 +12,20 @@ open class MultiAdapter<T>(private val typeFactory: ITypeFactory<T>, dataList: M
 
     private val typeDataArray = SparseArray<ITypeFactory.TypeData<T>>()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder<T> {
-        val view = LayoutInflater.from(parent.context).inflate(typeDataArray[viewType].layoutId, parent, false)
-        return ViewHolder(view, typeDataArray[viewType].bind)
-    }
-
     override fun getItemViewType(position: Int): Int {
         val typeData = typeFactory.type(getItem(position))
         typeDataArray.put(typeData.layoutId, typeData)
         return typeData.layoutId
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder<T> {
+        val view = LayoutInflater.from(parent.context).inflate(typeDataArray[viewType].layoutId, parent, false)
+        return ViewHolder<T>(view)
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder<T>, position: Int) {
+        val adapterPosition = holder.adapterPosition
+        holder.bind(typeDataArray[getItemViewType(adapterPosition)], getItem(adapterPosition))
     }
 }
 

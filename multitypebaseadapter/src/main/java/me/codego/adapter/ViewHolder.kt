@@ -6,10 +6,18 @@ import android.view.View
 /**
  * Created by mengxn on 2017/9/21.
  */
-open class ViewHolder<in T>(view: View, private val bind: (View, T, Int) -> Unit) : RecyclerView.ViewHolder(view) {
+open class ViewHolder<T>(view: View) : RecyclerView.ViewHolder(view) {
 
-    fun bind(data: T, position: Int) {
-        bind(itemView, data, position)
+    var data: T? = null
+
+    fun bind(typeData: ITypeFactory.TypeData<T>, data: T) {
+        this.data = data
+        typeData.bind(this)
     }
 
 }
+
+
+
+
+

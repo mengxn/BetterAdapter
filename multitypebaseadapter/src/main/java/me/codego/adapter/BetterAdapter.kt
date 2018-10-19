@@ -10,12 +10,6 @@ abstract class BetterAdapter<T>(private val dataList: MutableList<T> = arrayList
 
     override fun getItemCount(): Int = dataList.size
 
-    override fun onBindViewHolder(holder: ViewHolder<T>, position: Int) {
-        holder.adapterPosition.let {
-            holder.bind(getItem(it), it)
-        }
-    }
-
     fun setData(dataList: List<T>) {
         this.dataList.apply {
             clear()
