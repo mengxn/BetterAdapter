@@ -73,7 +73,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        override fun onBindViewHolder(holder: ViewHolder<String>?, position: Int) {
+        override fun onBindViewHolder(holder: ViewHolder<String>, position: Int) {
             super.onBindViewHolder(holder, position)
             holder?.run {
                 itemView.contentTv.text = "$position >> custom adapter"

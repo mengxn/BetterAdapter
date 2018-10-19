@@ -10,11 +10,9 @@ abstract class BetterAdapter<T>(private val dataList: MutableList<T> = arrayList
 
     override fun getItemCount(): Int = dataList.size
 
-    override fun onBindViewHolder(holder: ViewHolder<T>?, position: Int) {
-        holder?.let {
-            holder.adapterPosition.let {
-                holder.bind(getItem(it), it)
-            }
+    override fun onBindViewHolder(holder: ViewHolder<T>, position: Int) {
+        holder.adapterPosition.let {
+            holder.bind(getItem(it), it)
         }
     }
 
@@ -27,12 +25,15 @@ abstract class BetterAdapter<T>(private val dataList: MutableList<T> = arrayList
 
     fun getData() = dataList
 
-    fun append(data: T) {
-        insert(itemCount, data)
+    open fun append(data: T) {
+        dataList.add(data)
+        notifyItemInserted(dataList.size - 1)
     }
 
     fun append(dataList: List<T>) {
-        insert(itemCount, dataList)
+        val start = this.dataList.size
+        this.dataList.addAll(dataList)
+        notifyItemRangeInserted(start, dataList.size)
     }
 
     fun insert(index: Int, data: T) {
@@ -53,7 +54,15 @@ abstract class BetterAdapter<T>(private val dataList: MutableList<T> = arrayList
     fun delete(index: Int) {
         dataList.removeAt(index)
         notifyItemRemoved(index)
+        (itemCount - index).takeIf { it > 0 }?.let {
+            notifyItemRangeChanged(index, it)
+        }
     }
 
-    fun getItem(index: Int) = dataList[index]
+    fun clear() {
+        dataList.clear()
+        notifyDataSetChanged()
+    }
+
+    open fun getItem(index: Int) = dataList[index]
 }
