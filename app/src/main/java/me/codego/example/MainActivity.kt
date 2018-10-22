@@ -66,8 +66,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initCustomAdapter(): BetterAdapter<String> = object : BetterAdapter<String>() {
-        override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder<String> {
-            val view = LayoutInflater.from(parent!!.context).inflate(R.layout.item_main_1, parent, false)
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder<String> {
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.item_main_1, parent, false)
             return ViewHolder(view)
         }
 

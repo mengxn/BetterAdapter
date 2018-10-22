@@ -9,4 +9,8 @@ open class SingleAdapter<T>(private val layoutId: Int, dataList: MutableList<T> 
 
     override fun type(data: T): ITypeFactory.TypeData<T> = ITypeFactory.TypeData(layoutId, bind)
 
-}, dataList)
+}, dataList) {
+
+    constructor(layoutId: Int, bind: (holder: ViewHolder<T>) -> Unit) : this(layoutId, arrayListOf(), bind)
+
+}
