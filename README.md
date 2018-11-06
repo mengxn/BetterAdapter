@@ -2,8 +2,9 @@
 > 简化RecyclerView接入流程
 1. 单类型
 ```kotlin
-recyclerView.adapter = SingleAdapter<String>(R.layout.item_main_1) { view, s, position ->
+recyclerView.adapter = SingleAdapter<String>(R.layout.item_main_1) { holder ->
     // do something
+    holder.itemView.contentTv.text = holder.data
 }
 ```
 2. 多类型
@@ -13,11 +14,11 @@ val typeFactory = object : ITypeFactory<String> {
             override fun type(data: String): ITypeFactory.TypeData<String> {
                 // 这里自定义 ViewType 逻辑
                 if (data.length < 10) {
-                    return ITypeFactory.TypeData(R.layout.item_main_1) { view, item, position ->
+                    return ITypeFactory.TypeData(R.layout.item_main_1) { holder ->
                             // 数据绑定
                     }
                 }
-                return ITypeFactory.TypeData(R.layout.item_main_2) { view, item, position ->
+                return ITypeFactory.TypeData(R.layout.item_main_2) { holder ->
                         // 数据绑定
                 }
             }
@@ -29,13 +30,11 @@ recyclerView.adapter = MultiAdapter(typeFactory)
 recyclerView.adapter = object : BetterAdapter<String>() {
         override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder<String> {
             val view = LayoutInflater.from(parent!!.context).inflate(R.layout.item_main_1, parent, false)
-            return ViewHolder(view){ view, item, position ->
-                // 数据绑定
-            }
+            return ViewHolder(view)
         }
 
         override fun onBindViewHolder(holder: ViewHolder<String>?, position: Int) {
             super.onBindViewHolder(holder, position)
-            // 自定义数据处理
+            // 自定义绑定数据
         }
 ```
