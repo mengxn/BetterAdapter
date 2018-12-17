@@ -4,7 +4,13 @@
 ```kotlin
 recyclerView.adapter = SingleAdapter<String>(R.layout.item_main_1) { holder ->
     // do something
+    
+    // way 1
     holder.itemView.contentTv.text = holder.data
+    // way 2
+    holder.setText(R.id.contentTv, holder.data)
+    // way 3
+    holder.getView<TextView>(R.id.contentTv).text = holder.data
 }
 ```
 2. 多类型
