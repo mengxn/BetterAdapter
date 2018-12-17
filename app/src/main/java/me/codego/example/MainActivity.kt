@@ -6,6 +6,7 @@ import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item_main_1.view.*
 import kotlinx.android.synthetic.main.item_main_2.view.*
@@ -58,7 +59,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun initAdapter(): SingleAdapter<String> {
         val adapter: SingleAdapter<String> = SingleAdapter(R.layout.item_main_1) { holder ->
+            // way 1
             holder.itemView.contentTv.text = holder.data
+            // way 2
+            holder.setText(R.id.contentTv, holder.data)
+            // way 3
+            holder.getView<TextView>(R.id.contentTv).text = holder.data
         }
         val dataList = (0..20).map { "%d >> %s".format(it, TEXT_KOTLIN) }
         adapter.append(dataList)
