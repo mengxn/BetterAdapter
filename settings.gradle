@@ -1,1 +1,1 @@
-include ':app', ':multitypebaseadapter'
+include ':app', ':adapter'

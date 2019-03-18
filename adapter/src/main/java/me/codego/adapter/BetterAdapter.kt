@@ -24,28 +24,28 @@ abstract class BetterAdapter<T>(private val dataList: MutableList<T> = arrayList
         notifyItemInserted(dataList.size - 1)
     }
 
-    fun append(dataList: List<T>) {
+    open fun append(dataList: List<T>) {
         val start = this.dataList.size
         this.dataList.addAll(dataList)
         notifyItemRangeInserted(start, dataList.size)
     }
 
-    fun insert(index: Int, data: T) {
+    open fun insert(index: Int, data: T) {
         dataList.add(index, data)
         notifyItemInserted(index)
     }
 
-    fun insert(index: Int, dataList: List<T>) {
+    open fun insert(index: Int, dataList: List<T>) {
         this.dataList.addAll(index, dataList)
         notifyItemRangeInserted(index, dataList.size)
     }
 
-    fun replace(index: Int, data: T) {
+    open fun replace(index: Int, data: T) {
         dataList[index] = data
         notifyItemChanged(index)
     }
 
-    fun delete(index: Int) {
+    open fun delete(index: Int) {
         dataList.removeAt(index)
         notifyItemRemoved(index)
         (itemCount - index).takeIf { it > 0 }?.let {
@@ -53,7 +53,7 @@ abstract class BetterAdapter<T>(private val dataList: MutableList<T> = arrayList
         }
     }
 
-    fun clear() {
+    open fun clear() {
         dataList.clear()
         notifyDataSetChanged()
     }
