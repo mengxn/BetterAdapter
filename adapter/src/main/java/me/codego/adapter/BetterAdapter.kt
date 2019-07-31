@@ -45,6 +45,13 @@ abstract class BetterAdapter<T>(private val dataList: MutableList<T> = arrayList
         notifyItemChanged(index)
     }
 
+    fun exchange(oldPosition: Int, newPosition: Int) {
+        if (dataList.size > Math.max(oldPosition, newPosition)) {
+            dataList.add(newPosition, dataList.removeAt(oldPosition))
+        }
+        notifyItemMoved(oldPosition, newPosition)
+    }
+
     open fun delete(index: Int) {
         dataList.removeAt(index)
         notifyItemRemoved(index)
