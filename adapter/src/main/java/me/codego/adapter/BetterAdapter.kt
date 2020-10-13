@@ -1,6 +1,9 @@
 package me.codego.adapter
 
 import android.support.v7.widget.RecyclerView
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 
 /**
  * Adapter 增强类
@@ -66,4 +69,12 @@ abstract class BetterAdapter<T>(private val dataList: MutableList<T> = arrayList
     }
 
     open fun getItem(index: Int) = dataList[index]
+
+    override fun onBindViewHolder(holder: ViewHolder<T>, position: Int) {
+        holder.bind(getItem(holder.adapterPosition))
+    }
+
+    fun inflateChildView(parent: ViewGroup, layoutId: Int): View {
+        return LayoutInflater.from(parent.context).inflate(layoutId, parent, false)
+    }
 }

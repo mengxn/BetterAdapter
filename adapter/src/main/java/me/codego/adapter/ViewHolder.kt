@@ -13,41 +13,47 @@ open class ViewHolder<T>(view: View) : RecyclerView.ViewHolder(view) {
 
     var data: T? = null
 
-    private val mViews: SparseArray<View> by lazy { SparseArray<View>() }
+    private val mViews: SparseArray<in View> by lazy { SparseArray<View>() }
 
-    fun bind(typeData: ITypeFactory.TypeData<T>, data: T) {
+    open fun bind(data: T) {
         this.data = data
-        typeData.bind(this)
     }
 
     fun setText(id: Int, text: CharSequence?) {
-        getView<TextView>(id).text = text
+        getView<TextView>(id)?.text = text
     }
 
     fun setImageResource(id: Int, resId: Int) {
-        getView<ImageView>(id).setImageResource(resId)
+        getView<ImageView>(id)?.setImageResource(resId)
     }
 
     fun setBackground(id: Int, resId: Int) {
-        getView<View>(id).setBackgroundResource(resId)
+        getView<View>(id)?.setBackgroundResource(resId)
     }
 
     fun setBackgroundColor(id: Int, color: Int) {
-        getView<View>(id).setBackgroundColor(color)
+        getView<View>(id)?.setBackgroundColor(color)
     }
 
     fun setVisibility(id: Int, visibility: Int) {
-        getView<View>(id).visibility = visibility
+        getView<View>(id)?.visibility = visibility
     }
 
     fun setOnClickListener(id: Int, listener: View.OnClickListener) {
-        getView<View>(id).setOnClickListener(listener)
+        getView<View>(id)?.setOnClickListener(listener)
     }
 
-    fun <R: View> getView(id: Int): R {
-        return mViews.get(id) as? R ?: itemView.findViewById<R>(id).also {
-            mViews.put(id, it)
+    fun <R: View> getView(id: Int): R? {
+
+        fun findView(id: Int): R? {
+            val view = itemView.findViewById<R>(id)
+            if (view != null) {
+                mViews.put(id, view)
+            }
+            return view
         }
+
+        return mViews.get(id) as? R ?: findView(id)
     }
 }
 
