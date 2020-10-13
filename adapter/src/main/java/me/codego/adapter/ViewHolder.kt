@@ -43,13 +43,11 @@ open class ViewHolder<T>(view: View) : RecyclerView.ViewHolder(view) {
         getView<View>(id)?.setOnClickListener(listener)
     }
 
-    fun <R: View> getView(id: Int): R? {
+    fun <R: View> getView(id: Int): R {
 
-        fun findView(id: Int): R? {
+        fun findView(id: Int): R {
             val view = itemView.findViewById<R>(id)
-            if (view != null) {
-                mViews.put(id, view)
-            }
+            mViews.put(id, view)
             return view
         }
 
