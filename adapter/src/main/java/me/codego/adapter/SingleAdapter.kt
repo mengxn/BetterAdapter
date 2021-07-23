@@ -8,7 +8,11 @@ import android.view.ViewGroup
  * Created by mengxn on 2017/9/20.
  */
 
-open class SingleAdapter<T>(private val layoutId: Int, dataList: MutableList<T> = arrayListOf(), val bind: (data: ViewHolder<T>) -> Unit) : BetterAdapter<T>(dataList) {
+open class SingleAdapter<T>(
+    private val layoutId: Int,
+    dataList: MutableList<T> = arrayListOf(),
+    val bind: (data: ViewHolder<T>) -> Unit
+) : BetterAdapter<T>(dataList) {
 
     constructor(layoutId: Int, bind: (data: ViewHolder<T>) -> Unit) : this(layoutId, arrayListOf(), bind)
 

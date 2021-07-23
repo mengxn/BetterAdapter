@@ -11,10 +11,12 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item_main_1.view.*
 import me.codego.adapter.BetterAdapter
 import me.codego.adapter.SingleAdapter
+import me.codego.adapter.SingleAdapter2
 import me.codego.adapter.ViewHolder
 import me.codego.example.bean.Animal
 import me.codego.example.bean.Cat
 import me.codego.example.bean.Dog
+import me.codego.example.databinding.ItemMain3Binding
 
 class MainActivity : AppCompatActivity() {
 
@@ -33,7 +35,8 @@ class MainActivity : AppCompatActivity() {
 
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
-        recyclerView.adapter = initAdapter()
+        // recyclerView.adapter = initAdapter()
+        recyclerView.adapter = initDataBindingAdapter()
         // recyclerView.adapter = initMultiAdapter()
     }
 
@@ -45,6 +48,15 @@ class MainActivity : AppCompatActivity() {
             holder.setText(R.id.contentTv, holder.data)
             // way 3
             holder.getView<TextView>(R.id.contentTv)?.text = holder.data
+        }
+        val dataList = (0..20).map { "%d >> %s".format(it, TEXT_KOTLIN) }
+        adapter.append(dataList)
+        return adapter
+    }
+
+    private fun initDataBindingAdapter(): SingleAdapter2<ItemMain3Binding, String> {
+        val adapter = SingleAdapter2<ItemMain3Binding, String>(R.layout.item_main_3) { holder ->
+            holder.getBinding().contentTv.text = holder.data
         }
         val dataList = (0..20).map { "%d >> %s".format(it, TEXT_KOTLIN) }
         adapter.append(dataList)
