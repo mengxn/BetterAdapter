@@ -3,7 +3,19 @@
 
 1. 在build.gradle文件中添加引用
 ```gradle
-implementation 'me.codego:adapter:1.0.3'
+# project build.gradle
+allprojects {
+    repositories {
+        ...
+        maven { url 'https://jitpack.io' }
+    }
+}
+
+# module build.gralde
+dependencies {
+    ...
+    implementation 'com.github.mengxn:BetterAdapter:1.0.4'
+}
 ```
 
 2. 代码中创建Adapter
