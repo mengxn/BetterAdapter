@@ -5,6 +5,6 @@ package me.codego.example.bean
  */
 data class Cat(val id: Int) : Animal {
 
-    override fun getName() = "Cat $id"
+    override fun getName() = "Cat $id：喵喵喵"
 
 }

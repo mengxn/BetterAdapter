@@ -35,6 +35,38 @@ dependencies {
         holder.getView<TextView>(R.id.contentTv).text = holder.data
     }
     ```
+   
+   - 单类型（支持 DataBinding）
+   ```kotlin
+   recyclerView.adapter = SingleAdapter2<ItemMain3Binding, String>(R.layout.item_main_3) { holder ->
+       // do something
+       // holder.data 为数据源，holder.getBinding() 为ViewBinding
+   
+       // example
+       holder.getBinding().contentTv.text = holder.data
+   }
+   ```
+   
+   - 多类型（支持 DataBinding）
+   ```kotlin
+   MultiAdapter<Animal> { data ->
+      // holder.data 为数据源，holder.getBinding() 为ViewBinding
+      // 示例：简单利用Model进行区分类型
+      when (data) {
+         is Dog -> ViewHolderWrapper<Animal>(1, R.layout.item_main_3) { holder ->
+            val dog = holder.data as? Dog
+            (holder.getBinding() as ItemMain3Binding).contentTv.text = dog?.getName()
+         }
+         is Cat -> ViewHolderWrapper(2, R.layout.item_main_3) { holder ->
+            val cat = holder.data as? Cat
+            (holder.getBinding() as ItemMain3Binding).contentTv.text = cat?.getName()
+         }
+         else -> ViewHolderWrapper<Animal>(3, R.layout.item_main_3) { holder ->
+            (holder.getBinding() as ItemMain3Binding).contentTv.text = "Unknown"
+         }
+      }
+   }
+   ```
 
     - 自定义Adapter（多类型）
 

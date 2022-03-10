@@ -9,13 +9,11 @@ import android.view.ViewGroup
 import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item_main_1.view.*
-import me.codego.adapter.BetterAdapter
-import me.codego.adapter.SingleAdapter
-import me.codego.adapter.SingleAdapter2
-import me.codego.adapter.ViewHolder
+import me.codego.adapter.*
 import me.codego.example.bean.Animal
 import me.codego.example.bean.Cat
 import me.codego.example.bean.Dog
+import me.codego.example.bean.Pig
 import me.codego.example.databinding.ItemMain3Binding
 
 class MainActivity : AppCompatActivity() {
@@ -36,10 +34,14 @@ class MainActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
         // recyclerView.adapter = initAdapter()
-        recyclerView.adapter = initDataBindingAdapter()
+        // recyclerView.adapter = initDataBindingAdapter()
         // recyclerView.adapter = initMultiAdapter()
+        recyclerView.adapter = initMultiAdapter2()
     }
 
+    /**
+     * 基础单类型适配器
+     */
     private fun initAdapter(): SingleAdapter<String> {
         val adapter: SingleAdapter<String> = SingleAdapter(R.layout.item_main_1) { holder ->
             // way 1
@@ -54,6 +56,9 @@ class MainActivity : AppCompatActivity() {
         return adapter
     }
 
+    /**
+     * 基础单类型适配器，使用 ViewDataBinding 绑定 View
+     */
     private fun initDataBindingAdapter(): SingleAdapter2<ItemMain3Binding, String> {
         val adapter = SingleAdapter2<ItemMain3Binding, String>(R.layout.item_main_3) { holder ->
             holder.getBinding().contentTv.text = holder.data
@@ -63,11 +68,44 @@ class MainActivity : AppCompatActivity() {
         return adapter
     }
 
+    /**
+     * 继承 BetterAdapter 处理多类型布局
+     */
     private fun initMultiAdapter(): BetterAdapter<Animal> {
         val dataList = (0..30).map { if (it % 3 == 0) Dog(it) else Cat(it) }.toMutableList()
         val animalAdapter = AnimalAdapter()
         animalAdapter.setData(dataList)
         return animalAdapter
+    }
+
+    /**
+     * 使用 MultiAdapter 处理多类型布局
+     */
+    private fun initMultiAdapter2(): BetterAdapter<Animal> {
+        val dataList = (0..99).map {
+            when (it % 3) {
+                0 -> Dog(it)
+                1 -> Cat(it)
+                else -> Pig(it)
+            }
+        }
+        return MultiAdapter<Animal> { data ->
+            when (data) {
+                is Dog -> ViewHolderWrapper<Animal>(1, R.layout.item_main_3) { holder ->
+                    val dog = holder.data as? Dog
+                    (holder.getBinding() as ItemMain3Binding).contentTv.text = dog?.getName()
+                }
+                is Cat -> ViewHolderWrapper(2, R.layout.item_main_3) { holder ->
+                    val cat = holder.data as? Cat
+                    (holder.getBinding() as ItemMain3Binding).contentTv.text = cat?.getName()
+                }
+                else -> ViewHolderWrapper<Animal>(3, R.layout.item_main_3) { holder ->
+                    (holder.getBinding() as ItemMain3Binding).contentTv.text = "Unknown"
+                }
+            }
+        }.apply {
+            setData(dataList)
+        }
     }
 
     class AnimalAdapter : BetterAdapter<Animal>() {
