@@ -11,19 +11,16 @@ import android.view.ViewGroup
  * @author mengxn
  * @date 2022/2/28
  */
-class MultiAdapter<D>(val layoutBlock: (D) -> ViewHolderWrapper<D>) : BetterAdapter<D>() {
+open class MultiAdapter<D>(block: ViewHolderConfig<D>.() -> Unit) : BetterAdapter<D>() {
 
-    private val mWrapperMap by lazy { mutableMapOf<Int, ViewHolderWrapper<D>>() }
+    private val mConfig = ViewHolderConfig<D>().apply(block)
 
     override fun getItemViewType(position: Int): Int {
-        val wrapper = layoutBlock(getItem(position))
-        mWrapperMap[wrapper.viewType] = wrapper
-        return wrapper.viewType
+        return mConfig.getViewType(getItem(position)) ?: super.getItemViewType(position)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder<D> {
-        val wrapper = mWrapperMap[viewType] ?: throw IllegalArgumentException("viewType $viewType is undefined")
-
+        val wrapper = mConfig.getViewHolderWrapper(viewType) ?: throw IllegalArgumentException("viewType $viewType is undefined")
         val layoutId = wrapper.layoutId
         val bindBlock = wrapper.bind
         val binding = DataBindingUtil.inflate<ViewDataBinding>(LayoutInflater.from(parent.context), layoutId, parent, false)
@@ -34,6 +31,5 @@ class MultiAdapter<D>(val layoutBlock: (D) -> ViewHolderWrapper<D>) : BetterAdap
             }
         }
     }
-
 }
 

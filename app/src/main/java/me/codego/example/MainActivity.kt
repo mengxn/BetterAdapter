@@ -89,19 +89,27 @@ class MainActivity : AppCompatActivity() {
                 else -> Pig(it)
             }
         }
-        return MultiAdapter<Animal> { data ->
-            when (data) {
-                is Dog -> ViewHolderWrapper<Animal>(1, R.layout.item_main_3) { holder ->
-                    val dog = holder.data as? Dog
-                    (holder.getBinding() as ItemMain3Binding).contentTv.text = dog?.getName()
+        return MultiAdapter<Animal> {
+
+            makeViewType { data ->
+                when (data) {
+                    is Dog -> 1
+                    is Cat -> 2
+                    is Pig -> 3
                 }
-                is Cat -> ViewHolderWrapper(2, R.layout.item_main_3) { holder ->
-                    val cat = holder.data as? Cat
-                    (holder.getBinding() as ItemMain3Binding).contentTv.text = cat?.getName()
-                }
-                else -> ViewHolderWrapper<Animal>(3, R.layout.item_main_3) { holder ->
-                    (holder.getBinding() as ItemMain3Binding).contentTv.text = "Unknown"
-                }
+            }
+
+            addViewHolder(1, R.layout.item_main_3) { holder ->
+                val dog = holder.data as? Dog
+                (holder.getBinding() as ItemMain3Binding).contentTv.text = dog?.getName()
+            }
+            addViewHolder(2, R.layout.item_main_3) { holder ->
+                val cat = holder.data as? Cat
+                (holder.getBinding() as ItemMain3Binding).contentTv.text = cat?.getName()
+            }
+            addViewHolder(3, R.layout.item_main_3) { holder ->
+                val pig = holder.data as? Pig
+                (holder.getBinding() as ItemMain3Binding).contentTv.text = pig?.getName()
             }
         }.apply {
             setData(dataList)
